@@ -1,11 +1,10 @@
-package screenplay.tasks.common;
+package screenplay.tasks.common.LoginSuccess;
 
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.waits.WaitUntil;
 import screenplay.ui.common.HomePage;
-import screenplay.ui.common.LoginPage;
 
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isClickable;
 

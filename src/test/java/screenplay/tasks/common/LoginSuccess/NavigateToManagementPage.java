@@ -1,4 +1,4 @@
-package screenplay.tasks.common;
+package screenplay.tasks.common.LoginSuccess;
 
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;

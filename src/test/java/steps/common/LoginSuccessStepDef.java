@@ -1,4 +1,4 @@
-package steps;
+package steps.common;
 
 import io.cucumber.java.Before;
 import io.cucumber.java.en.And;
@@ -10,20 +10,22 @@ import net.thucydides.model.util.EnvironmentVariables;
 import net.serenitybdd.screenplay.actions.Open;
 import net.serenitybdd.screenplay.actors.OnStage;
 import net.serenitybdd.screenplay.actors.OnlineCast;
-import screenplay.tasks.common.ActivateAccountInAdminPage;
-import screenplay.tasks.common.Login;
-import screenplay.tasks.common.LogoutFromAdminPage;
-import screenplay.tasks.common.NavigateToManagementPage;
-import screenplay.tasks.common.VerifyPageDisplayed;
-import screenplay.tasks.common.VerifyProfileName;
+import screenplay.tasks.common.LoginSuccess.ActivateAccountInAdminPage;
+import screenplay.tasks.common.LoginSuccess.Login;
+import screenplay.tasks.common.LoginSuccess.LogoutFromAdminPage;
+import screenplay.tasks.common.LoginSuccess.NavigateToManagementPage;
+import screenplay.tasks.common.LoginSuccess.VerifyPageDisplayed;
+import screenplay.tasks.common.LoginSuccess.VerifyProfileName;
 import screenplay.ui.common.LoginPage;
 import net.serenitybdd.screenplay.ensure.Ensure;
 import net.serenitybdd.screenplay.waits.WaitUntil;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
-public class LoginStepDef {
+
+public class LoginSuccessStepDef {
     private EnvironmentVariables environmentVariables;
 
-    // Removed unused PageObject instance to prevent Serenity from auto-initializing a browser
+    // Removed unused PageObject instance to prevent Serenity from auto-initializing
+    // a browser
     // private LoginPage loginPage;
 
     @Before
@@ -72,48 +74,41 @@ public class LoginStepDef {
                 VerifyPageDisplayed.forName("Receptionist Management"));
     }
 
-
     @Then("^\"?(.*?)\"? should see the admin management page$")
     public void actorShouldSeeTheAdminManagementPage(String actorName) {
         getActor(actorName).attemptsTo(
                 VerifyPageDisplayed.forName("Admin Management"));
     }
 
-
     @And("^\"?(.*?)\"? navigates to \"([^\"]*)\"$")
     public void actorNavigatesTo(String actorName, String destination) {
         getActor(actorName).attemptsTo(
-                NavigateToManagementPage.named(destination)
-        );
+                NavigateToManagementPage.named(destination));
     }
+
     @When("^\"?(.*?)\"? activates account \"([^\"]*)\" in Admin page$")
     public void theUserActivatesAccountInAdminPage(String actorName, String email) {
         getActor(actorName).attemptsTo(
-                ActivateAccountInAdminPage.forEmail(email)
-        );
+                ActivateAccountInAdminPage.forEmail(email));
     }
 
     @And("^\"?(.*?)\"? logs out from Admin page$")
     public void actorLogsOutFromAdmin(String actorName) {
         getActor(actorName).attemptsTo(
-                LogoutFromAdminPage.now()
-        );
+                LogoutFromAdminPage.now());
     }
 
     @When("^\"?(.*?)\"? attempts to login with username \"([^\"]*)\" and password \"([^\"]*)\"$")
     public void actorAttemptsToLogin(String actorName, String username, String password) {
         getActor(actorName).attemptsTo(
-                Login.withCredentials(username, password)
-        );
+                Login.withCredentials(username, password));
     }
 
     @Then("^\"?(.*?)\"? should see the error message \"([^\"]*)\"$")
     public void actorShouldSeeErrorMessage(String actorName, String expectedMessage) {
         getActor(actorName).attemptsTo(
                 WaitUntil.the(LoginPage.ERROR_MESSAGE, isVisible()),
-                Ensure.that(LoginPage.ERROR_MESSAGE).hasText(expectedMessage)
-        );
+                Ensure.that(LoginPage.ERROR_MESSAGE).hasText(expectedMessage));
     }
-
 
 }
