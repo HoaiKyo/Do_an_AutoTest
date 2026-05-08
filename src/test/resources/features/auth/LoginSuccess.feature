@@ -36,7 +36,7 @@ Feature: Test Login and Account Management
       | admin | admin@nhaspa.com | 12345678  | Admin Hệ Thống |
 
 
-  @TC_LOG_08 @LoginAccActivated
+  @TC_LOG_06 @LoginAccActivated
   Scenario Outline: Admin activates user account and verifies login success
     # Phase 1: Admin performs activation
     Given Admin logs in with username "admin@nhaspa.com" and password "12345678"
@@ -50,3 +50,4 @@ Feature: Test Login and Account Management
     Examples:
       | actor |
       | Admin |
+
