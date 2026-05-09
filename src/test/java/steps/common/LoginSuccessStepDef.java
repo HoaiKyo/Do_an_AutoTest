@@ -55,7 +55,8 @@ public class LoginSuccessStepDef {
         if (actor == null) {
             actor = getActor(actorName);
         }
-        actor.attemptsTo(Login.withCredentials(username, password));
+        String processedPassword = password.replace("[space]", " ");
+        actor.attemptsTo(Login.withCredentials(username, processedPassword));
     }
 
     @Then("^\"?(.*?)\"? should see the profile name as \"([^\"]*)\"$")
@@ -98,17 +99,6 @@ public class LoginSuccessStepDef {
                 LogoutFromAdminPage.now());
     }
 
-    @When("^\"?(.*?)\"? attempts to login with username \"([^\"]*)\" and password \"([^\"]*)\"$")
-    public void actorAttemptsToLogin(String actorName, String username, String password) {
-        getActor(actorName).attemptsTo(
-                Login.withCredentials(username, password));
-    }
 
-    @Then("^\"?(.*?)\"? should see the error message \"([^\"]*)\"$")
-    public void actorShouldSeeErrorMessage(String actorName, String expectedMessage) {
-        getActor(actorName).attemptsTo(
-                WaitUntil.the(LoginPage.ERROR_MESSAGE, isVisible()),
-                Ensure.that(LoginPage.ERROR_MESSAGE).hasText(expectedMessage));
-    }
 
 }
