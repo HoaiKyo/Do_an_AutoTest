@@ -30,15 +30,26 @@ Feature: Test ForgotPassWord
       | actor | phone      | email             | newPassword | confirmPassword | resetMessage                                                  | oldPassword | message                        |
       | user  | 0902222003 | mai.le@nhaspa.com | 123456789   | 123456789       | Mật khẩu đã được thay đổi thành công. Vui lòng đăng nhập lại. | 12345678    | Email hoặc mật khẩu không đúng |
 
-  @TC_FP_03 @TC_FP_04 @TC_FP_05 @TC_FP_06 @TC_FP_07 @EmptyFieldFP
+  @TC_FP_04 @TC_FP_05 @TC_FP_06 @TC_FP_07 @TC_FP_08  @EmptyFieldFP
   Scenario Outline: <testCase> - <caseName>
     When <actor> resets password with phone "<phone>", email "<email>", new password "<newPassword>" and confirm password "<confirmPassword>"
     Then <actor> should see required error tooltip for forgot password field "<field>" with message "<message>"
 
     Examples:
       | testCase | caseName                              | actor | phone      | email             | newPassword | confirmPassword | field                 | message                       |
-      | TC_FP_03 | Bỏ trống trường số điện thoại         | user  |            | mai.le@nhaspa.com | 123456789   | 123456789       | Số điện thoại         | Vui lòng điền vào trường này. |
-      | TC_FP_04 | Bỏ trống trường email                 | user  | 0902222003 |                   | 123456789   | 123456789       | Email                 | Vui lòng điền vào trường này. |
-      | TC_FP_05 | Bỏ trống trường mật khẩu mới          | user  | 0902222003 | mai.le@nhaspa.com |             | 123456789       | Mật khẩu mới          | Vui lòng điền vào trường này. |
-      | TC_FP_06 | Bỏ trống trường xác nhận mật khẩu mới | user  | 0902222003 | mai.le@nhaspa.com | 123456789   |                 | Xác nhận mật khẩu mới | Vui lòng điền vào trường này. |
-      | TC_FP_07 | Bỏ trống tất cả trường nhập liệu      | user  |            |                   |             |                 | Số điện thoại         | Vui lòng điền vào trường này. |
+      | TC_FP_04 | Bỏ trống trường số điện thoại         | user  |            | mai.le@nhaspa.com | 123456789   | 123456789       | Số điện thoại         | Vui lòng điền vào trường này. |
+      | TC_FP_05 | Bỏ trống trường email                 | user  | 0902222003 |                   | 123456789   | 123456789       | Email                 | Vui lòng điền vào trường này. |
+      | TC_FP_06 | Bỏ trống trường mật khẩu mới          | user  | 0902222003 | mai.le@nhaspa.com |             | 123456789       | Mật khẩu mới          | Vui lòng điền vào trường này. |
+      | TC_FP_07 | Bỏ trống trường xác nhận mật khẩu mới | user  | 0902222003 | mai.le@nhaspa.com | 123456789   |                 | Xác nhận mật khẩu mới | Vui lòng điền vào trường này. |
+      | TC_FP_08 | Bỏ trống tất cả trường nhập liệu      | user  |            |                   |             |                 | Số điện thoại         | Vui lòng điền vào trường này. |
+
+  @TC_FP_09 @TC_FP_10
+  @ForgotPassword @Validation @InvalidPhone
+  Scenario Outline: <testCase> - <caseName>
+    When <actor> resets password with phone "<phone>", email "<email>", new password "<newPassword>" and confirm password "<confirmPassword>"
+    Then <actor> should see alert message "<message>"
+
+    Examples:
+      | testCase | caseName                                                         | actor | phone      | email             | newPassword | confirmPassword | message                                                     |
+      | TC_FP_09 | Quên mật khẩu thất bại khi số điện thoại không bắt đầu bằng số 0 | user  | 4444444444 | mai.le@nhaspa.com | 123456789   | 123456789       | Số điện thoại hợp lệ phải có 10 chữ số và bắt đầu bằng số 0 |
+      | TC_FP_10 | Quên mật khẩu thất bại khi số điện thoại không đủ độ dài         | user  | 09022      | mai.le@nhaspa.com | 123456789   | 123456789       | Số điện thoại hợp lệ phải có 10 chữ số và bắt đầu bằng số 0 |
