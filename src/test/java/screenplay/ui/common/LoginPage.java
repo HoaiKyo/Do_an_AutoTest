@@ -19,5 +19,7 @@ public class LoginPage extends PageObject {
     public static final Target BUTTON_LOGOUT = Target.the("Button Logout")
             .located(By.xpath("//button[contains(text(),'Đăng xuất')]"));
     public static final Target ERROR_MESSAGE = Target.the("Error message for failed login")
-            .located(By.xpath("//div[contains(@class,'toast-error')] | //p[contains(@class,'text-red')]")); 
+            .located(By.xpath("//div[contains(@class,'toast-error')] | //p[contains(@class,'text-red')]"));
+    public static final Target TEXTLINK_FORGOTPASSWORD = Target.the("Text Link Quên mật khẩu ở trang đăng nhập")
+            .located(By.xpath("//button[contains(text(),'Quên mật khẩu?')]"));
 }
