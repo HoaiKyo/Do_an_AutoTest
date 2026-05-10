@@ -31,7 +31,7 @@ Feature: Test ForgotPassWord
       | user  | 0902222003 | mai.le@nhaspa.com | 123456789   | 123456789       | Mật khẩu đã được thay đổi thành công. Vui lòng đăng nhập lại. | 12345678    | Email hoặc mật khẩu không đúng |
 
   @TC_FP_04 @TC_FP_05 @TC_FP_06 @TC_FP_07 @TC_FP_08  @EmptyFieldFP
-  Scenario Outline: <testCase> - <caseName>
+  Scenario Outline: TC_FP_04 TC_FP_05 TC_FP_06 TC_FP_07 TC_FP_08<testCase> - <caseName>
     When <actor> resets password with phone "<phone>", email "<email>", new password "<newPassword>" and confirm password "<confirmPassword>"
     Then <actor> should see required error tooltip for forgot password field "<field>" with message "<message>"
 
@@ -44,7 +44,7 @@ Feature: Test ForgotPassWord
       | TC_FP_08 | Bỏ trống tất cả trường nhập liệu      | user  |            |                   |             |                 | Số điện thoại         | Vui lòng điền vào trường này. |
 
   @TC_FP_09 @TC_FP_10 @InvalidPhone
-  Scenario Outline: <testCase> - <caseName>
+  Scenario Outline: TC_FP_09 TC_FP_10<testCase> - <caseName>
     When <actor> resets password with phone "<phone>", email "<email>", new password "<newPassword>" and confirm password "<confirmPassword>"
     Then <actor> should see alert message "<message>"
 
@@ -63,7 +63,7 @@ Feature: Test ForgotPassWord
       | actor | phone      | email            | newPassword | confirmPassword | field | message                                                                    |
       | user  | 0902222003 | mai.lenhaspa.com | 123456789   | 123456789       | Email | Vui lòng bao gồm '@' trong địa chỉ email. 'mai.lenhaspa.com' bị thiếu '@'. |
 
-  @TC_FP_12 @ForgotPassword @InvalidPasswordLength
+  @TC_FP_12  @InvalidPasswordLength
   Scenario Outline: TC_FP_12 - Đổi mật khẩu thất bại khi mật khẩu mới và cập nhật mật khẩu mới nhỏ hơn 6 ký tự
     When <actor> resets password with phone "<phone>", email "<email>", new password "<newPassword>" and confirm password "<confirmPassword>"
     Then <actor> should see alert message "<message>"
@@ -72,7 +72,7 @@ Feature: Test ForgotPassWord
       | actor | phone      | email             | newPassword | confirmPassword | message                    |
       | user  | 0902222003 | mai.le@nhaspa.com | 123         | 123             | Cập nhật mật khẩu thất bại |
 
-  @TC_FP_13 @ForgotPassword  @PasswordNotMatch
+  @TC_FP_13  @PasswordNotMatch
   Scenario Outline: TC_FP_13 - Đổi mật khẩu thất bại khi xác nhận mật khẩu mới và mật khẩu mới không trùng khớp
     When <actor> resets password with phone "<phone>", email "<email>", new password "<newPassword>" and confirm password "<confirmPassword>"
     Then <actor> should see alert message "<message>"
@@ -80,3 +80,14 @@ Feature: Test ForgotPassWord
     Examples:
       | actor | phone      | email             | newPassword | confirmPassword | message                      |
       | user  | 0902222003 | mai.le@nhaspa.com | 123456789   | 123             | Mật khẩu xác nhận không khớp |
+
+  @TC_FP_14 @TC_FP_15 @TC_FP_16
+  Scenario Outline: TC_FP_14 TC_FP_15 TC_FP_16<testCase> - <caseName>
+    When <actor> resets password with phone "<phone>", email "<email>", new password "<newPassword>" and confirm password "<confirmPassword>"
+    Then <actor> should see alert message "<message>"
+
+    Examples:
+      | testCase | caseName                          | actor | phone      | email             | newPassword | confirmPassword | message                                            |
+      | TC_FP_14 | Số điện thoại không tồn tại       | user  | 0352430036 | mai.le@nhaspa.com | 123456789   | 123456789       | Thông tin email hoặc số điện thoại không chính xác |
+      | TC_FP_15 | Email không tồn tại               | user  | 0902222003 | hoai@gmail.com    | 123456789   | 123456789       | Thông tin email hoặc số điện thoại không chính xác |
+      | TC_FP_16 | Email và số điện thoại không khớp | user  | 0352430036 | hoai@gmail.com    | 123456789   | 123456789       | Thông tin email hoặc số điện thoại không chính xác |

@@ -4,7 +4,7 @@ Feature: Test Logi Success and Account Management
   Background:
     Given <actor> go to bml login page
 
-  @TC_LOG_03 @LoginSuccess
+  @TC_LOG_03
   Scenario Outline: TC_LOG_03 Login success with role user
     When <actor> logs in with username "<username>" and password "<password>"
     Then the user should see the profile name as "<profileName>"
@@ -13,7 +13,7 @@ Feature: Test Logi Success and Account Management
       | user  | phuc.to@gmail.com | 12345678 | Tô Văn Phúc |
 
 
-  @TC_LOG_04 @LoginSuccess
+  @TC_LOG_04
   Scenario Outline: TC_LOG_04 Login success with role letan
     When <actor> logs in with username "<username>" and password "<password>"
     Then the user should see the profile name as "<profileName>"
@@ -24,7 +24,7 @@ Feature: Test Logi Success and Account Management
       | actor | username         | password  | profileName |
       | letan | letan@nhaspa.com | 123456789 | Lễ Tân 1    |
 
-  @TC_LOG_05 @LoginSuccess
+  @TC_LOG_05
   Scenario Outline: TC_LOG_05 Login success with role admin
     When <actor> logs in with username "<username>" and password "<password>"
     Then the user should see the profile name as "<profileName>"
@@ -48,6 +48,7 @@ Feature: Test Logi Success and Account Management
     Then  TestUser should see the profile name as "TestdeActive"
 
     Examples:
-      | actor |
-      | Admin |
+    |user|
+    |admin|
+
 
