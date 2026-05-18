@@ -9,4 +9,6 @@ public class Management {
             .located(By.xpath("//a[contains(text(),'Quản lý Lễ tân')]"));
     public static final Target VerifyPageReceptionist = Target.the("verify page le tan")
             .located(By.xpath("//div[@class='flex items-center']"));
+    public static final Target BUTTON_DANGXUAT = Target.the("Button Logout trang quan tri")
+            .located(By.xpath("//button[@title='Đăng xuất']//*[name()='svg']"));
 }

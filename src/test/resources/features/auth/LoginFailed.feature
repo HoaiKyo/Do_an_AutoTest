@@ -1,9 +1,9 @@
-@LoginFailed
-Feature: Test Login Failed and Account Management
+
+  @LoginFailed
+  Feature: Test Login Failed and Account Management
 
   Background:
     Given <actor> go to bml login page
-
   @TC_LOG_07
   Scenario Outline: TC_LOG_07 Login failed with locked account
     When <actor> logs in with username "<username>" and password "<password>"

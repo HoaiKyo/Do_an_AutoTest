@@ -7,6 +7,7 @@ import net.serenitybdd.screenplay.waits.WaitUntil;
 import screenplay.ui.common.HomePage;
 
 import static net.serenitybdd.screenplay.Tasks.instrumented;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isNotVisible;
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 public class VerifyProfileName implements Task {
@@ -22,9 +23,15 @@ public class VerifyProfileName implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
-        actor.attemptsTo(
-                WaitUntil.the(HomePage.TEXT_PROFILE, isVisible()),
-                Ensure.that(HomePage.TEXT_PROFILE).hasText(expectedProfileName)
-        );
+        if (expectedProfileName == null || expectedProfileName.isEmpty()) {
+            actor.attemptsTo(
+                    WaitUntil.the(HomePage.TEXT_PROFILE, isNotVisible()).forNoMoreThan(10).seconds()
+            );
+        } else {
+            actor.attemptsTo(
+                    WaitUntil.the(HomePage.TEXT_PROFILE, isVisible()).forNoMoreThan(10).seconds(),
+                    Ensure.that(HomePage.TEXT_PROFILE).hasText(expectedProfileName)
+            );
+        }
     }
 }
