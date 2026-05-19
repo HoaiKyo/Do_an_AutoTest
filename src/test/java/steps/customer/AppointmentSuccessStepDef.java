@@ -19,6 +19,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import net.serenitybdd.screenplay.GivenWhenThen;
+import org.hamcrest.Matchers;
 import screenplay.tasks.common.LoginSuccess.OpenProfile;
 import screenplay.ui.common.LoginPage;
 import screenplay.ui.customer.AppointmentSuccess;
@@ -41,11 +43,11 @@ public class AppointmentSuccessStepDef {
         OnStage.setTheStage(new OnlineCast());
     }
 
-    @Given("^\"?(.*?)\"? logs in with customer credentials from config$")
-    public void logsInWithCustomerCredentialsFromConfig(String actorName) {
+    @Given("^\"?(.*?)\"? logs in with (customer|admin|letan) credentials from config$")
+    public void logsInWithCredentialsFromConfig(String actorName, String role) {
         Actor actor = OnStage.theActorCalled(actorName);
-        String username = environmentVariables.getProperty("credentials.customer.username");
-        String password = environmentVariables.getProperty("credentials.customer.password");
+        String username = environmentVariables.getProperty("credentials." + role + ".username");
+        String password = environmentVariables.getProperty("credentials." + role + ".password");
         actor.attemptsTo(screenplay.tasks.common.LoginSuccess.Login.withCredentials(username, password));
     }
 
@@ -60,125 +62,36 @@ public class AppointmentSuccessStepDef {
     @And("the customer selects appointment date {string}")
     public void customerSelectsDate(String date) {
         Actor actor = OnStage.theActorInTheSpotlight();
-        LocalDate dateObj;
-        if (date.equals("auto_date")) {
-            // Select tomorrow's date
-            dateObj = LocalDate.now().plusDays(1);
-        } else {
-            dateObj = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-        }
-        String dateToSelect = dateObj.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        savedDate = dateObj.format(DateTimeFormatter.ofPattern("d/M/yyyy")); // Save for verification
-
         actor.attemptsTo(
-                WaitUntil.the(AppointmentSuccess.NGAYHEN, isVisible()));
-
-        WebElement element = AppointmentSuccess.NGAYHEN.resolveFor(actor);
-        JavascriptExecutor js = (JavascriptExecutor) Serenity.getDriver();
-        String jsScript = "var val = '" + dateToSelect + "'; " +
-                "var el = arguments[0]; " +
-                "var setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; " +
-                "if (setter) { " +
-                "    setter.call(el, val); " +
-                "} else { " +
-                "    el.value = val; " +
-                "} " +
-                "el.dispatchEvent(new Event('input', { bubbles: true })); " +
-                "el.dispatchEvent(new Event('change', { bubbles: true }));";
-        js.executeScript(jsScript, element);
+                screenplay.tasks.customer.SelectAppointmentDate.withValue(date)
+        );
+        savedDate = actor.recall("savedDate");
     }
 
     @And("the customer selects appointment time {string}")
     public void customerSelectsTime(String time) {
         Actor actor = OnStage.theActorInTheSpotlight();
-
-        if (time.equals("auto_time")) {
-            actor.attemptsTo(
-                    WaitUntil.the(AppointmentSuccess.KHUNGGIO, isVisible()));
-
-            // Wait for API to load the time slots (options > 1)
-            WebDriver driver = Serenity.getDriver();
-            new WebDriverWait(driver, Duration.ofSeconds(10))
-                    .until(d -> new Select(AppointmentSuccess.KHUNGGIO.resolveFor(actor)).getOptions().size() > 1);
-
-            actor.attemptsTo(
-                    SelectFromOptions.byIndex(1).from(AppointmentSuccess.KHUNGGIO));
-            
-            Select select = new Select(AppointmentSuccess.KHUNGGIO.resolveFor(actor));
-            savedTime = select.getFirstSelectedOption().getText().trim();
-        } else {
-            actor.attemptsTo(
-                    WaitUntil.the(AppointmentSuccess.KHUNGGIO, isVisible()));
-
-            WebDriver driver = Serenity.getDriver();
-            new WebDriverWait(driver, Duration.ofSeconds(10))
-                    .until(d -> new Select(AppointmentSuccess.KHUNGGIO.resolveFor(actor)).getOptions().size() > 1);
-
-            actor.attemptsTo(
-                    SelectFromOptions.byVisibleText(time).from(AppointmentSuccess.KHUNGGIO));
-            savedTime = time;
-        }
+        actor.attemptsTo(
+                screenplay.tasks.customer.SelectAppointmentTime.withValue(time)
+        );
+        savedTime = actor.recall("savedTime");
     }
 
     @And("the customer selects service {string}")
     public void customerSelectsService(String service) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                WaitUntil.the(AppointmentSuccess.SERVICE_COMBOBOX, isVisible()));
-
-        // Wait for services to load
-        WebDriver driver = Serenity.getDriver();
-        new WebDriverWait(driver, Duration.ofSeconds(10))
-                .until(d -> new Select(AppointmentSuccess.SERVICE_COMBOBOX.resolveFor(actor)).getOptions().size() > 1);
-
-        Select select = new Select(AppointmentSuccess.SERVICE_COMBOBOX.resolveFor(actor));
-        int numOptions = select.getOptions().size();
-
-        if (service.equals("auto_service") || service.contains("COMBO 3")) {
-            // Select random service (index 1 to numOptions - 1)
-            int randomIndex = 1 + (int) (Math.random() * (numOptions - 1));
-            String selectedText = select.getOptions().get(randomIndex).getText();
-
-            actor.attemptsTo(
-                    SelectFromOptions.byIndex(randomIndex).from(AppointmentSuccess.SERVICE_COMBOBOX));
-            savedService = selectedText;
-            actor.remember("service1", selectedText);
-        } else {
-            actor.attemptsTo(
-                    SelectFromOptions.byVisibleText(service).from(AppointmentSuccess.SERVICE_COMBOBOX));
-            savedService = service;
-            actor.remember("service1", service);
-        }
+                screenplay.tasks.customer.SelectService.withName(service)
+        );
+        savedService = actor.recall("savedService");
     }
 
     @And("the customer selects specialist {string}")
     public void customerSelectsSpecialist(String specialist) {
         Actor actor = OnStage.theActorInTheSpotlight();
-        if (specialist.equals("auto_specialist")) {
-            actor.attemptsTo(
-                    WaitUntil.the(AppointmentSuccess.STAFF_COMBOBOX, isVisible()));
-
-            // Wait for specialists to load
-            WebDriver driver = Serenity.getDriver();
-            new WebDriverWait(driver, Duration.ofSeconds(10))
-                    .until(d -> new Select(AppointmentSuccess.STAFF_COMBOBOX.resolveFor(actor)).getOptions()
-                            .size() > 1);
-
-            actor.attemptsTo(
-                    SelectFromOptions.byIndex(1).from(AppointmentSuccess.STAFF_COMBOBOX));
-        } else {
-            actor.attemptsTo(
-                    WaitUntil.the(AppointmentSuccess.STAFF_COMBOBOX, isVisible()));
-
-            // Wait for specialists to load
-            WebDriver driver = Serenity.getDriver();
-            new WebDriverWait(driver, Duration.ofSeconds(10))
-                    .until(d -> new Select(AppointmentSuccess.STAFF_COMBOBOX.resolveFor(actor)).getOptions()
-                            .size() > 1);
-
-            actor.attemptsTo(
-                    SelectFromOptions.byVisibleText(specialist).from(AppointmentSuccess.STAFF_COMBOBOX));
-        }
+        actor.attemptsTo(
+                screenplay.tasks.customer.SelectSpecialist.withName(specialist)
+        );
     }
 
     @And("the customer enters full name {string}")
@@ -219,13 +132,14 @@ public class AppointmentSuccessStepDef {
     public void systemDisplaysSuccessPopup() {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                WaitUntil.the(AppointmentSuccess.POPUP_HOANTAT, isVisible()));
+                WaitUntil.the(AppointmentSuccess.POPUP_HOANTAT, isVisible()).forNoMoreThan(15).seconds());
     }
 
     @When("the customer clicks the {string} button on the popup")
     public void customerClicksClosePopup(String btn) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
+                WaitUntil.the(AppointmentSuccess.BUTTON_CLOSE, isVisible()).forNoMoreThan(10).seconds(),
                 Click.on(AppointmentSuccess.BUTTON_CLOSE));
     }
 
@@ -247,10 +161,13 @@ public class AppointmentSuccessStepDef {
     @Then("the system displays the newly created appointment in the history")
     public void systemDisplaysNewAppointment() {
         Actor actor = OnStage.theActorInTheSpotlight();
-        actor.attemptsTo(
-                screenplay.tasks.customer.VerifyAppointmentInHistory.withDetails(
-                        savedService, 
-                        savedTime + " - " + savedDate
+        actor.should(
+                GivenWhenThen.seeThat(
+                        screenplay.questions.customer.VerifyAppointmentInHistory.withDetails(
+                                savedService,
+                                savedTime + " - " + savedDate
+                        ),
+                        Matchers.is(true)
                 )
         );
     }

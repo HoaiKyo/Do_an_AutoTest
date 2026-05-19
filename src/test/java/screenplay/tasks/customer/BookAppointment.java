@@ -49,6 +49,7 @@ public class BookAppointment implements Task {
         
         LocalDate dateObj;
         if ("auto_date".equals(date)) {
+            // Select tomorrow's date
             dateObj = LocalDate.now().plusDays(1);
         } else {
             dateObj = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
@@ -84,8 +85,13 @@ public class BookAppointment implements Task {
             new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(d -> new Select(AppointmentSuccess.KHUNGGIO.resolveFor(actor)).getOptions().size() > 1);
 
+            Select select = new Select(AppointmentSuccess.KHUNGGIO.resolveFor(actor));
+            int numOptions = select.getOptions().size();
+            int maxSafeIndex = Math.min(5, numOptions - 1);
+            int randomIndex = 1 + (int) (Math.random() * maxSafeIndex);
+
             actor.attemptsTo(
-                    SelectFromOptions.byIndex(1).from(AppointmentSuccess.KHUNGGIO)
+                    SelectFromOptions.byIndex(randomIndex).from(AppointmentSuccess.KHUNGGIO)
             );
         } else {
             actor.attemptsTo(

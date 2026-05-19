@@ -30,8 +30,6 @@ public class AppointmentSuccess {
             .located(By.xpath("//a[contains(text(),'Hồ sơ cá nhân')]"));
     public static final Target APPOINTMENT_ITEM = Target.the("Lịch hẹn đầu tiên trong danh sách")
             .located(By.xpath("//div[@class='space-y-4']/div[1]"));
-    public static final Target APPOINTMENT_SERVICE_STATUS = Target.the("Trạng thái của lịch hẹn")
-            .locatedBy("//div[@class='space-y-4']/div[1]//div[contains(@class,'text-orange-700')]");
     public static final Target BUTTON_ADD_SERVICE = Target.the("button để thêm dịch vụ")
             .located(By.xpath("//button[normalize-space()='Thêm dòng']"));
     public static final Target COMBOBOX_SERVICE2 = Target.the("combobox để thêm dịch vụ 2")

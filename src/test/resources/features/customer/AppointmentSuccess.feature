@@ -70,5 +70,20 @@ Feature: Test Appointment Success
     Then the system displays the newly created appointment in the history
 
     @TC_APT_04
-    Given "admin" go to bml login page
-    And "admin" logs in with customer credentials from config
+    Scenario: TC_APT_04 Admin creates an appointment successfully
+      Given "admin" go to bml login page
+      And "admin" logs in with admin credentials from config
+      And the admin navigates to "Admin Management"
+      When the admin clicks the "Lịch Hẹn" button
+      And the admin clicks the "Tạo lịch hẹn" button
+      And the admin enters customer full name "auto_name"
+      And the admin enters customer phone number "auto_phone"
+      And the admin selects service "auto_service"
+      And the admin selects suitable specialist "auto_specialist"
+      And the admin enters appointment date "auto_date"
+      And the admin selects start time "auto_time"
+      And the admin clicks the "Lưu lịch hẹn" button
+      Then the system displays a successful appointment creation alert
+      When the admin clicks "OK" on the success alert
+      Then the system displays the newly created appointment in the appointment history list
+

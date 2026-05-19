@@ -1,16 +1,19 @@
-package screenplay.tasks.customer;
+package screenplay.questions.customer;
 
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Actor;
-import net.serenitybdd.screenplay.Task;
-import net.serenitybdd.screenplay.ensure.Ensure;
-import net.serenitybdd.screenplay.questions.Text;
+import net.serenitybdd.screenplay.Question;
 import net.serenitybdd.screenplay.waits.WaitUntil;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import screenplay.ui.customer.AppointmentSuccess;
 
-import static net.serenitybdd.screenplay.Tasks.instrumented;
+import java.util.List;
+
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
-public class VerifyAppointmentInHistory implements Task {
+public class VerifyAppointmentInHistory implements Question<Boolean> {
 
     private final String expectedService;
     private final String expectedDateTime;
@@ -26,15 +29,15 @@ public class VerifyAppointmentInHistory implements Task {
     }
 
     public static VerifyAppointmentInHistory withService(String expectedService) {
-        return instrumented(VerifyAppointmentInHistory.class, expectedService);
+        return new VerifyAppointmentInHistory(expectedService);
     }
 
     public static VerifyAppointmentInHistory withDetails(String expectedService, String expectedDateTime) {
-        return instrumented(VerifyAppointmentInHistory.class, expectedService, expectedDateTime);
+        return new VerifyAppointmentInHistory(expectedService, expectedDateTime);
     }
 
     @Override
-    public <T extends Actor> void performAs(T actor) {
+    public Boolean answeredBy(Actor actor) {
         // Chờ cho danh sách lịch sử hiển thị
         actor.attemptsTo(
                 WaitUntil.the(AppointmentSuccess.APPOINTMENT_ITEM, isVisible())
@@ -60,13 +63,13 @@ public class VerifyAppointmentInHistory implements Task {
         }
 
         // Lấy tất cả các thẻ lịch hẹn trong danh sách
-        org.openqa.selenium.WebDriver driver = net.serenitybdd.core.Serenity.getDriver();
-        java.util.List<org.openqa.selenium.WebElement> cards = driver.findElements(org.openqa.selenium.By.xpath("//div[@class='space-y-4']/div"));
+        WebDriver driver = Serenity.getDriver();
+        List<WebElement> cards = driver.findElements(By.xpath("//div[@class='space-y-4']/div"));
 
         boolean found = false;
         StringBuilder allCardsText = new StringBuilder();
 
-        for (org.openqa.selenium.WebElement card : cards) {
+        for (WebElement card : cards) {
             String cardText = card.getText();
             allCardsText.append("[").append(cardText.replace("\n", " ")).append("] ");
 
@@ -103,5 +106,6 @@ public class VerifyAppointmentInHistory implements Task {
                                      "Thông tin cần tìm: " + expectedDetails + "\n" +
                                      "Các thẻ thực tế quét được: " + allCardsText.toString());
         }
+        return true;
     }
 }
