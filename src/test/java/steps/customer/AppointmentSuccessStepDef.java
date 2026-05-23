@@ -121,14 +121,13 @@ public class AppointmentSuccessStepDef {
             actor.attemptsTo(
                     Click.on(AppointmentSuccess.BUTTON_DATLICHHEN));
 
-            // Handle browser alert that appears after successful booking
-            // The frontend fires window.alert() on success, which blocks all DOM interaction.
-            // We must accept the alert first so the form can close and the success popup can render.
+            // Wait up to 1s for the alert to appear, but DO NOT accept it here.
+            // This allows error test cases to verify the alert text in the next step.
+            // Success test cases will dismiss the lingering alert in their next step.
             WebDriver driver = Serenity.getDriver();
             try {
                 new WebDriverWait(driver, Duration.ofSeconds(1))
                         .until(ExpectedConditions.alertIsPresent());
-                driver.switchTo().alert().accept();
             } catch (Exception e) {
                 // No alert appeared — continue normally
             }
@@ -236,6 +235,17 @@ public class AppointmentSuccessStepDef {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
                 screenplay.tasks.customer.EnterCompanionName.withValue(name)
+        );
+    }
+
+    @Then("the system displays the alert message {string}")
+    public void systemDisplaysAlertMessage(String expectedMessage) {
+        Actor actor = OnStage.theActorInTheSpotlight();
+        actor.should(
+                GivenWhenThen.seeThat(
+                        screenplay.questions.common.TheAlertMessage.text(),
+                        Matchers.containsString(expectedMessage)
+                )
         );
     }
 }

@@ -132,3 +132,63 @@ Feature: Test Appointment Success
     When the admin clicks "OK" on the success alert
     Then the system displays the newly created appointment in the appointment history list
 
+  @TC_APT_07
+  Scenario: TC_APT_07 Customer leaves appointment time empty
+    Given "customer" go to bml login page
+    And "customer" logs in with customer credentials from config
+    When the customer clicks the "Book Now" button on the Banner
+    And the customer selects appointment date "auto_date"
+    And the customer clicks the "Next" button
+    Then the system displays the alert message "Vui lòng chọn khung giờ hẹn."
+
+    @TC_APT_08
+    Scenario: TC_APT_08 Customer cannot book an appointment without selecting a service
+    Given "customer" go to bml login page
+    And "customer" logs in with customer credentials from config
+    When the customer clicks the "Book Now" button on the Banner
+    And the customer selects appointment date "auto_date"
+    And the customer selects appointment time "auto_time"
+    And the customer clicks the "Next" button
+    And the customer clicks the "Next" button
+    Then the system displays the alert message "Vui lòng chọn ít nhất 1 dịch vụ."
+
+  @TC_APT_09
+  Scenario: TC_APT_09 Customer cannot book an appointment without entering full name
+    Given "customer" go to bml login page
+    And "customer" logs in with customer credentials from config
+    When the customer clicks the "Book Now" button on the Banner
+    And the customer selects appointment date "auto_date"
+    And the customer selects appointment time "auto_time"
+    And the customer clicks the "Next" button
+    And the customer selects service "auto_service"
+    And the customer selects specialist "auto_specialist"
+    And the customer clicks the "Next" button
+    And the customer clicks the "Book Appointment" button
+    Then the system displays the alert message "Vui lòng điền họ tên."
+
+  @TC_APT_10
+  Scenario: TC_APT_10 Customer cannot book an appointment without entering phone number
+    Given "customer" go to bml login page
+    And "customer" logs in with customer credentials from config
+    When the customer clicks the "Book Now" button on the Banner
+    And the customer selects appointment date "auto_date"
+    And the customer selects appointment time "auto_time"
+    And the customer clicks the "Next" button
+    And the customer selects service "auto_service"
+    And the customer selects specialist "auto_specialist"
+    And the customer clicks the "Next" button
+    And the customer enters full name "auto_name"
+    And the customer clicks the "Book Appointment" button
+    Then the system displays the alert message "Vui lòng điền số điện thoại."
+
+  @TC_APT_11
+  Scenario: TC_APT_11 Admin cannot create an appointment without selecting start time
+    Given "admin" go to bml login page
+    And "admin" logs in with admin credentials from config
+    And the admin navigates to "Admin Management"
+    When the admin clicks the "Lịch Hẹn" button
+    And the admin clicks the "Tạo lịch hẹn" button
+    And the admin enters appointment date "auto_date"
+    And the admin clicks the "Lưu lịch hẹn" button
+    Then the system displays the alert message "Khung giờ hẹn không hợp lệ. Vui lòng chọn lại slot 30 phút."
+
