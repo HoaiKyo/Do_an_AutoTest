@@ -23,7 +23,7 @@ public class AppointmentSuccess {
     public static final Target BUTTON_DATLICHHEN = Target.the("Button Dat Lich ngay sau cac buoc")
             .located(By.xpath("(//button[normalize-space()='Đặt lịch ngay'])[2]"));
     public static final Target POPUP_HOANTAT = Target.the("POpup hien sau khi dat lich thanh cong")
-            .located(By.xpath("//p[contains(normalize-space(),'đã được ghi nhận')]"));
+            .located(By.xpath("//h3[contains(text(),'Hoàn tất!')]"));
     public static final Target BUTTON_CLOSE = Target.the("BUTTON close popup")
             .located(By.xpath("//button[normalize-space()='Đóng']"));
     public static final Target BUTTON_HOSOCANHAN = Target.the("BUTTON profile personal")

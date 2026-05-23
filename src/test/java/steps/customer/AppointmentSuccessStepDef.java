@@ -7,6 +7,7 @@ import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Actor;
+import org.openqa.selenium.NoAlertPresentException;
 import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Enter;
 import net.serenitybdd.screenplay.actions.SelectFromOptions;
@@ -17,6 +18,7 @@ import net.thucydides.model.util.EnvironmentVariables;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import net.serenitybdd.screenplay.GivenWhenThen;
@@ -118,6 +120,18 @@ public class AppointmentSuccessStepDef {
         if (btnName.equals("Book Appointment")) {
             actor.attemptsTo(
                     Click.on(AppointmentSuccess.BUTTON_DATLICHHEN));
+
+            // Handle browser alert that appears after successful booking
+            // The frontend fires window.alert() on success, which blocks all DOM interaction.
+            // We must accept the alert first so the form can close and the success popup can render.
+            WebDriver driver = Serenity.getDriver();
+            try {
+                new WebDriverWait(driver, Duration.ofSeconds(1))
+                        .until(ExpectedConditions.alertIsPresent());
+                driver.switchTo().alert().accept();
+            } catch (Exception e) {
+                // No alert appeared — continue normally
+            }
         } else if (btnName.equals("Next")) {
             actor.attemptsTo(
                     Click.on(AppointmentSuccess.BUTTON_KETIEP));
@@ -131,6 +145,15 @@ public class AppointmentSuccessStepDef {
     @Then("the system displays a successful appointment booking popup")
     public void systemDisplaysSuccessPopup() {
         Actor actor = OnStage.theActorInTheSpotlight();
+
+        // Double-check: dismiss any lingering alert before inspecting the DOM
+        WebDriver driver = Serenity.getDriver();
+        try {
+            driver.switchTo().alert().accept();
+        } catch (NoAlertPresentException ignored) {
+            // No alert — proceed
+        }
+
         actor.attemptsTo(
                 WaitUntil.the(AppointmentSuccess.POPUP_HOANTAT, isVisible()).forNoMoreThan(15).seconds());
     }
@@ -138,9 +161,21 @@ public class AppointmentSuccessStepDef {
     @When("the customer clicks the {string} button on the popup")
     public void customerClicksClosePopup(String btn) {
         Actor actor = OnStage.theActorInTheSpotlight();
-        actor.attemptsTo(
-                WaitUntil.the(AppointmentSuccess.BUTTON_CLOSE, isVisible()).forNoMoreThan(10).seconds(),
-                Click.on(AppointmentSuccess.BUTTON_CLOSE));
+        WebDriver driver = Serenity.getDriver();
+
+        // Dismiss any lingering alert before trying to interact with the popup
+        try {
+            driver.switchTo().alert().accept();
+        } catch (NoAlertPresentException ignored) { }
+
+        // Get the close button and try to click it immediately
+        WebElement closeBtn = AppointmentSuccess.BUTTON_CLOSE.resolveFor(actor);
+        try {
+            closeBtn.click();
+        } catch (Exception e) {
+            // Fallback: JS click if element is overlaid by a transition/animation
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", closeBtn);
+        }
     }
 
     @And("the customer clicks the Profile icon")
