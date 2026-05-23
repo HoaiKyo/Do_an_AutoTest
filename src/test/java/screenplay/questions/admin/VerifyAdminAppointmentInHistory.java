@@ -25,6 +25,14 @@ public class VerifyAdminAppointmentInHistory implements Question<Boolean> {
         String expectedDate = actor.recall("admin_date");
         String expectedTime = actor.recall("admin_time");
 
+        System.out.println("=== DEBUG ACTOR MEMORY ===");
+        System.out.println("Expected Name: " + expectedName);
+        System.out.println("Expected Phone: " + expectedPhone);
+        System.out.println("Expected Service: " + expectedService);
+        System.out.println("Expected Date: " + expectedDate);
+        System.out.println("Expected Time: " + expectedTime);
+        System.out.println("==========================");
+
         // Clean expected service text (strip cost and other suffixes)
         if (expectedService != null) {
             expectedService = expectedService.split("\\s*[\\(-–—]\\s*")[0].trim();

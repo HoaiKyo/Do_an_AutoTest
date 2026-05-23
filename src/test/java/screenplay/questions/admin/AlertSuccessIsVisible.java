@@ -17,7 +17,7 @@ public class AlertSuccessIsVisible implements Question<Boolean> {
     public Boolean answeredBy(Actor actor) {
         try {
             WebDriver driver = Serenity.getDriver();
-            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+            WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(15));
             wait.until(ExpectedConditions.alertIsPresent());
             String alertText = driver.switchTo().alert().getText();
             if (alertText.toLowerCase().contains("thành công") || alertText.toLowerCase().contains("thành công!")) {

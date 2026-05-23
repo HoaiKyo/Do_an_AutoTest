@@ -3,9 +3,10 @@ package screenplay.tasks.admin;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
+import net.serenitybdd.screenplay.actions.Click;
 import net.serenitybdd.screenplay.actions.Scroll;
-import net.serenitybdd.screenplay.actions.SelectFromOptions;
 import net.serenitybdd.screenplay.waits.WaitUntil;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -29,31 +30,33 @@ public class AdminSelectsTime implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
+        WebDriver driver = Serenity.getDriver();
+
         actor.attemptsTo(
-                Scroll.to(AppointmentAdminSuccess.INPUT_GIOHEN),
-                WaitUntil.the(AppointmentAdminSuccess.INPUT_GIOHEN, isVisible())
+                WaitUntil.the(AppointmentAdminSuccess.INPUT_GIOHEN, isVisible()),
+                Scroll.to(AppointmentAdminSuccess.INPUT_GIOHEN)
         );
 
-        WebDriver driver = Serenity.getDriver();
-        new WebDriverWait(driver, Duration.ofSeconds(10))
+        new WebDriverWait(driver, Duration.ofSeconds(15))
                 .until(d -> new Select(AppointmentAdminSuccess.INPUT_GIOHEN.resolveFor(actor)).getOptions().size() > 1);
 
         Select select = new Select(AppointmentAdminSuccess.INPUT_GIOHEN.resolveFor(actor));
-        int numOptions = select.getOptions().size();
 
         if ("auto_time".equals(time)) {
-            int maxSafeIndex = Math.min(5, numOptions - 1);
-            int randomIndex = 1 + (int) (Math.random() * maxSafeIndex);
-            actor.attemptsTo(
-                    SelectFromOptions.byIndex(randomIndex).from(AppointmentAdminSuccess.INPUT_GIOHEN)
-            );
-            String selectedText = select.getOptions().get(randomIndex).getText().trim();
+            String selectedText = select.getOptions().get(1).getText().trim();
+            select.selectByIndex(1);
             actor.remember("admin_time", selectedText);
         } else {
-            actor.attemptsTo(
-                    SelectFromOptions.byVisibleText(time).from(AppointmentAdminSuccess.INPUT_GIOHEN)
-            );
+            select.selectByVisibleText(time);
             actor.remember("admin_time", time);
         }
+
+        // Click vào dòng "Không có khách đi kèm." để trigger form cuộn lên trên
+        try {
+            actor.attemptsTo(
+                    Click.on(By.xpath("//p[contains(text(),'Không có khách đi kèm.')]"))
+            );
+            Thread.sleep(500);
+        } catch (Exception ignored) {}
     }
 }

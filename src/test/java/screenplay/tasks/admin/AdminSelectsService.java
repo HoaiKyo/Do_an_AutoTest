@@ -3,11 +3,13 @@ package screenplay.tasks.admin;
 import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
-import net.serenitybdd.screenplay.actions.Click;
-import net.serenitybdd.screenplay.actions.Scroll;
-import net.serenitybdd.screenplay.actions.SelectFromOptions;
 import net.serenitybdd.screenplay.waits.WaitUntil;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import screenplay.ui.admin.AppointmentAdminSuccess;
@@ -30,37 +32,52 @@ public class AdminSelectsService implements Task {
 
     @Override
     public <T extends Actor> void performAs(T actor) {
-        if (!AppointmentAdminSuccess.COMBOBOX_SERVICE.resolveFor(actor).isVisible()) {
-            actor.attemptsTo(
-                    Scroll.to(AppointmentAdminSuccess.BUTTON_ADD_SERVICE_ROW),
-                    Click.on(AppointmentAdminSuccess.BUTTON_ADD_SERVICE_ROW)
-            );
-        }
+        WebDriver driver = Serenity.getDriver();
 
+        // Tìm modal panel và dùng JS cuộn nó về đầu trang
+        WebElement panel = new WebDriverWait(driver, Duration.ofSeconds(15))
+            .until(ExpectedConditions.visibilityOfElementLocated(
+                By.cssSelector("#admin-appointment-panel, aside.admin-slide-in-right")
+            ));
+
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollTop = 0;", panel);
+        
+        try {
+            Thread.sleep(500); // Đợi modal cuộn xong và UI render
+        } catch (InterruptedException ignored) {}
+
+        // Chờ service dropdown visible sau khi form cuộn lên đầu
         actor.attemptsTo(
-                Scroll.to(AppointmentAdminSuccess.COMBOBOX_SERVICE),
-                WaitUntil.the(AppointmentAdminSuccess.COMBOBOX_SERVICE, isVisible())
+                WaitUntil.the(AppointmentAdminSuccess.COMBOBOX_SERVICE, isVisible()).forNoMoreThan(Duration.ofSeconds(15))
         );
 
-        WebDriver driver = Serenity.getDriver();
         new WebDriverWait(driver, Duration.ofSeconds(10))
                 .until(d -> new Select(AppointmentAdminSuccess.COMBOBOX_SERVICE.resolveFor(actor)).getOptions().size() > 1);
 
         Select select = new Select(AppointmentAdminSuccess.COMBOBOX_SERVICE.resolveFor(actor));
-        int numOptions = select.getOptions().size();
+
+        // Lấy 1 option của dropdown nhân viên TRƯỚC KHI chọn dịch vụ
+        WebElement staffSelect = AppointmentAdminSuccess.COMBOBOX_CHUYENVIEN.resolveFor(actor);
+        WebElement oldStaffOption = null;
+        try {
+            oldStaffOption = staffSelect.findElements(By.tagName("option")).get(1);
+        } catch (Exception ignored) {}
 
         if ("auto_service".equals(service)) {
-            int randomIndex = 1 + (int) (Math.random() * (numOptions - 1));
-            String selectedText = select.getOptions().get(randomIndex).getText();
-            actor.attemptsTo(
-                    SelectFromOptions.byIndex(randomIndex).from(AppointmentAdminSuccess.COMBOBOX_SERVICE)
-            );
+            String selectedText = select.getOptions().get(1).getText();
+            select.selectByIndex(1);
             actor.remember("admin_service", selectedText);
         } else {
-            actor.attemptsTo(
-                    SelectFromOptions.byVisibleText(service).from(AppointmentAdminSuccess.COMBOBOX_SERVICE)
-            );
+            select.selectByVisibleText(service);
             actor.remember("admin_service", service);
+        }
+
+        // Đợi option cũ bị Stale (tức là React đã re-render xong danh sách nhân viên mới)
+        if (oldStaffOption != null) {
+            try {
+                new WebDriverWait(driver, Duration.ofSeconds(5))
+                        .until(ExpectedConditions.stalenessOf(oldStaffOption));
+            } catch (Exception ignored) {}
         }
     }
 }

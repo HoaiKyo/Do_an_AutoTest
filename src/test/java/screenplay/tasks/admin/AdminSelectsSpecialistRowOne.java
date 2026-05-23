@@ -11,17 +11,19 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
 import java.util.List;
 
+import screenplay.ui.admin.AppointmentAdminSuccess;
+
 import static net.serenitybdd.screenplay.Tasks.instrumented;
 
-public class AdminSelectsSpecialist implements Task {
+public class AdminSelectsSpecialistRowOne implements Task {
     private final String specialist;
 
-    public AdminSelectsSpecialist(String specialist) {
+    public AdminSelectsSpecialistRowOne(String specialist) {
         this.specialist = specialist;
     }
 
-    public static AdminSelectsSpecialist withName(String specialist) {
-        return instrumented(AdminSelectsSpecialist.class, specialist);
+    public static AdminSelectsSpecialistRowOne withName(String specialist) {
+        return instrumented(AdminSelectsSpecialistRowOne.class, specialist);
     }
 
     @Override
@@ -30,18 +32,13 @@ public class AdminSelectsSpecialist implements Task {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
-        // Row 1: select chuyên viên (select thứ 3 trong block dịch vụ đầu tiên)
-        By staffSelectBy = By.xpath(
-            "(//aside[contains(@class,'admin-slide-in-right')]//div[contains(@class,'rounded-lg') and contains(@class,'p-2.5') and contains(@class,'space-y-2')]//select[3])[1]"
-        );
-
-        WebElement selectEl = wait.until(ExpectedConditions.visibilityOfElementLocated(staffSelectBy));
+        WebElement selectEl = AppointmentAdminSuccess.COMBOBOX_CHUYENVIEN_ROW1_TC06.resolveFor(actor);
         js.executeScript("arguments[0].scrollIntoView({block:'center'});", selectEl);
 
         // Chờ options load xong: có ít nhất 1 option hợp lệ (value != 0, enabled)
         wait.until(d -> {
             try {
-                WebElement el = d.findElement(staffSelectBy);
+                WebElement el = AppointmentAdminSuccess.COMBOBOX_CHUYENVIEN_ROW1_TC06.resolveFor(actor);
                 Select s = new Select(el);
                 return s.getOptions().stream().anyMatch(o ->
                     o.isEnabled()
@@ -55,14 +52,14 @@ public class AdminSelectsSpecialist implements Task {
         });
 
         // Resolve lại sau wait để tránh stale
-        selectEl = driver.findElement(staffSelectBy);
+        selectEl = AppointmentAdminSuccess.COMBOBOX_CHUYENVIEN_ROW1_TC06.resolveFor(actor);
         Select select = new Select(selectEl);
         List<WebElement> options = select.getOptions();
 
         String valueToSelect;
         String textToRemember;
 
-        if ("auto_specialist".equalsIgnoreCase(specialist)) {
+        if ("auto_specialist".equalsIgnoreCase(specialist) || "auto_specialist_1".equalsIgnoreCase(specialist)) {
             WebElement picked = options.stream()
                 .filter(WebElement::isEnabled)
                 .filter(o -> {

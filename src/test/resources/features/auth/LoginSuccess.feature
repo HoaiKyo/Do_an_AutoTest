@@ -1,5 +1,5 @@
 @LoginSuccess
-Feature: Test Logi Success and Account Management
+Feature: Test Login Success
 
   Background:
     Given <actor> go to bml login page

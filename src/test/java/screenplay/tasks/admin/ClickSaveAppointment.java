@@ -1,70 +1,60 @@
 package screenplay.tasks.admin;
 
+import net.serenitybdd.core.Serenity;
 import net.serenitybdd.screenplay.Actor;
 import net.serenitybdd.screenplay.Task;
-import net.serenitybdd.screenplay.actions.Scroll;
-import net.serenitybdd.screenplay.actions.Click;
+import net.serenitybdd.screenplay.Tasks;
 import net.serenitybdd.screenplay.waits.WaitUntil;
+import org.openqa.selenium.*;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 import screenplay.ui.admin.AppointmentAdminSuccess;
 
-import static net.serenitybdd.screenplay.Tasks.instrumented;
+import java.time.Duration;
+
 import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 public class ClickSaveAppointment implements Task {
     public static ClickSaveAppointment click() {
-        return instrumented(ClickSaveAppointment.class);
+        return Tasks.instrumented(ClickSaveAppointment.class);
     }
 
     @Override
     public <T extends Actor> void performAs(T actor) {
-        org.openqa.selenium.WebDriver driver = net.serenitybdd.core.Serenity.getDriver();
-        
-        while (true) {
-            actor.attemptsTo(
-                    Scroll.to(AppointmentAdminSuccess.BUTTON_LUULICHHEN),
-                    WaitUntil.the(AppointmentAdminSuccess.BUTTON_LUULICHHEN, isVisible()),
-                    Click.on(AppointmentAdminSuccess.BUTTON_LUULICHHEN)
-            );
-            
-            // Kiểm tra xem có xuất hiện alert báo lỗi chuyên viên bận không
+        WebDriver driver = Serenity.getDriver();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
+
+        By panelBy = By.cssSelector("div.fixed.inset-0.z-50 > aside.admin-slide-in-right");
+        By saveBy  = By.xpath(".//button[normalize-space()='Lưu lịch hẹn']");
+
+        for (int i = 0; i < 5; i++) {
             try {
-                org.openqa.selenium.support.ui.WebDriverWait wait = new org.openqa.selenium.support.ui.WebDriverWait(driver, java.time.Duration.ofSeconds(2));
-                wait.until(org.openqa.selenium.support.ui.ExpectedConditions.alertIsPresent());
-                
-                String alertText = driver.switchTo().alert().getText();
-                if (alertText.toLowerCase().contains("thành công")) {
-                    // Thành công! Để lại alert để các bước kiểm thử tiếp theo xác nhận và đóng
-                    break;
-                } else {
-                    // Xuất hiện alert báo lỗi (ví dụ chuyên viên bận), tự động chuyển chuyên viên khác và lưu lại
-                    System.out.println("Phát hiện lỗi đặt lịch: " + alertText + ". Tự động chuyển chuyên viên khác...");
-                    driver.switchTo().alert().accept(); // Đóng alert lỗi
-                    
-                    org.openqa.selenium.support.ui.Select selectSpec = new org.openqa.selenium.support.ui.Select(AppointmentAdminSuccess.COMBOBOX_CHUYENVIEN.resolveFor(actor));
-                    int specCount = selectSpec.getOptions().size();
-                    if (specCount > 1) {
-                        int currentSelectedIndex = -1;
-                        for (int i = 0; i < specCount; i++) {
-                            if (selectSpec.getOptions().get(i).isSelected()) {
-                                currentSelectedIndex = i;
-                                break;
-                            }
-                        }
-                        
-                        // Chọn chuyên viên tiếp theo trong danh sách
-                        int nextIndex = (currentSelectedIndex == -1) ? 1 : (currentSelectedIndex % (specCount - 1)) + 1;
-                        selectSpec.selectByIndex(nextIndex);
-                        
-                        // Chờ một chút để UI cập nhật
-                        Thread.sleep(500);
-                        continue; // Tiếp tục thử lưu lại
-                    }
+                WebElement panel = wait.until(ExpectedConditions.visibilityOfElementLocated(panelBy));
+
+                // đóng dropdown native nếu còn mở (rất hay chặn scroll/click)
+                new Actions(driver).sendKeys(Keys.ESCAPE).perform();
+
+                // Cuộn tới mục "Ghi chú" trước để đảm bảo phần đáy form hiện lên
+                try {
+                    WebElement noteLabel = panel.findElement(By.xpath(".//label[normalize-space()='Ghi chú']"));
+                    ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView({block: 'center'});", noteLabel);
+                    Thread.sleep(500);
+                } catch (Exception ignored) {
+                    // Fallback: nếu không thấy nhãn Ghi chú thì cuộn toàn bộ panel
+                    ((JavascriptExecutor) driver).executeScript(
+                        "arguments[0].scrollTop = arguments[0].scrollHeight;", panel
+                    );
                 }
-            } catch (Exception e) {
-                // Không có alert xuất hiện ngay hoặc lỗi khác, dừng vòng lặp
-                break;
+
+                // tìm nút Lưu bên trong panel sau khi cuộn
+                WebElement saveBtn = panel.findElement(saveBy);
+
+                wait.until(ExpectedConditions.elementToBeClickable(saveBtn)).click();
+                return;
+            } catch (StaleElementReferenceException | ElementClickInterceptedException | TimeoutException e) {
+                // retry
             }
-            break;
         }
     }
 }

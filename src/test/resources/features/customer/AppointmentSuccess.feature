@@ -78,12 +78,57 @@ Feature: Test Appointment Success
       And the admin clicks the "Tạo lịch hẹn" button
       And the admin enters customer full name "auto_name"
       And the admin enters customer phone number "auto_phone"
-      And the admin selects service "auto_service"
-      And the admin selects suitable specialist "auto_specialist"
       And the admin enters appointment date "auto_date"
       And the admin selects start time "auto_time"
+      And the admin selects service "auto_service"
+      And the admin selects suitable specialist "auto_specialist" row one
       And the admin clicks the "Lưu lịch hẹn" button
       Then the system displays a successful appointment creation alert
       When the admin clicks "OK" on the success alert
       Then the system displays the newly created appointment in the appointment history list
+
+  @TC_APT_05
+  Scenario: TC_APT_05 Admin creates an appointment successfully with multiple services
+    Given "admin" go to bml login page
+    And "admin" logs in with admin credentials from config
+    And the admin navigates to "Admin Management"
+    When the admin clicks the "Lịch Hẹn" button
+    And the admin clicks the "Tạo lịch hẹn" button
+    And the admin enters customer full name "auto_name"
+    And the admin enters customer phone number "auto_phone"
+    And the admin enters appointment date "auto_date"
+    And the admin selects start time "auto_time"
+    And the admin selects service "auto_service"
+    And the admin clicks the "Thêm dòng dịch vụ" button
+    And the admin selects service "auto_service_2" for service row 2
+    And the admin selects suitable specialist "auto_specialist"
+    And the admin selects suitable specialist "auto_specialist_2" for service row 2
+    And the admin clicks the "Lưu lịch hẹn" button
+    Then the system displays a successful appointment creation alert
+    When the admin clicks "OK" on the success alert
+    Then the system displays the newly created appointment in the appointment history list
+
+  @TC_APT_06
+  Scenario: TC_APT_06 Admin creates an appointment successfully with companion information
+    Given "admin" go to bml login page
+    And "admin" logs in with admin credentials from config
+    And the admin navigates to "Admin Management"
+    When the admin clicks the "Lịch Hẹn" button
+    And the admin clicks the "Tạo lịch hẹn" button
+    And the admin enters customer full name "auto_name"
+    And the admin enters customer phone number "auto_phone"
+    And the admin enters appointment date "auto_date"
+    And the admin selects start time "auto_time"
+    And the admin clicks the "Thêm người" button
+    And the admin enters companion name "auto_companion_name"
+    And the admin selects service "auto_service" row one
+    And the admin clicks the "Thêm dòng dịch vụ" button
+    And the admin selects the "auto_companion_name" as the service user
+    And the admin selects service "auto_service_2" for service row two
+    And the admin selects suitable specialist "auto_specialist" row one
+    And the admin selects suitable specialist "auto_specialist_2" for service row two
+    And the admin clicks the "Lưu lịch hẹn" button
+    Then the system displays a successful appointment creation alert
+    When the admin clicks "OK" on the success alert
+    Then the system displays the newly created appointment in the appointment history list
 
