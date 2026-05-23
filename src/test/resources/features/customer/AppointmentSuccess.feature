@@ -192,3 +192,16 @@ Feature: Test Appointment Success
     And the admin clicks the "Lưu lịch hẹn" button
     Then the system displays the alert message "Khung giờ hẹn không hợp lệ. Vui lòng chọn lại slot 30 phút."
 
+  @TC_APT_12
+  Scenario: TC_APT_12 Admin cannot create an appointment without selecting staff
+    Given "admin" go to bml login page
+    And "admin" logs in with admin credentials from config
+    And the admin navigates to "Admin Management"
+    When the admin clicks the "Lịch Hẹn" button
+    And the admin clicks the "Tạo lịch hẹn" button
+    And the admin enters customer full name "auto_name"
+    And the admin enters customer phone number "auto_phone"
+    And the admin enters appointment date "auto_date"
+    And the admin selects start time "auto_time"
+    And the admin clicks the "Lưu lịch hẹn" button
+    Then the system displays the alert message "Vui lòng thêm ít nhất 1 dòng dịch vụ."
