@@ -32,6 +32,9 @@ public class AdminEntersDate implements Task {
         if ("auto_date".equals(date)) {
             // Select tomorrow's date
             dateObj = LocalDate.now().plusDays(1);
+        } else if ("past_auto_date".equals(date)) {
+            // Select yesterday's date
+            dateObj = LocalDate.now().minusDays(1);
         } else {
             dateObj = LocalDate.parse(date, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
         }

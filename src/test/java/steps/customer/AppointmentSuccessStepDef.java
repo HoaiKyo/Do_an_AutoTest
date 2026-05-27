@@ -120,10 +120,6 @@ public class AppointmentSuccessStepDef {
         if (btnName.equals("Book Appointment")) {
             actor.attemptsTo(
                     Click.on(AppointmentSuccess.BUTTON_DATLICHHEN));
-
-            // Wait up to 1s for the alert to appear, but DO NOT accept it here.
-            // This allows error test cases to verify the alert text in the next step.
-            // Success test cases will dismiss the lingering alert in their next step.
             WebDriver driver = Serenity.getDriver();
             try {
                 new WebDriverWait(driver, Duration.ofSeconds(1))
@@ -138,6 +134,10 @@ public class AppointmentSuccessStepDef {
             actor.attemptsTo(
                     Click.on(AppointmentSuccess.BUTTON_ADD_SERVICE)
             );
+        } else if (btnName.contains("Đăng ký") || btnName.contains("Đăng kí") || btnName.contains("Đăng ky")) {
+            actor.attemptsTo(Click.on(screenplay.ui.common.Registration.BUTTON_REGISTER));
+        } else if (btnName.contains("Đăng nhập") || btnName.contains("Đăng nhap")) {
+            actor.attemptsTo(Click.on(screenplay.ui.common.LoginPage.BUTTON_LOGIN));
         }
     }
 

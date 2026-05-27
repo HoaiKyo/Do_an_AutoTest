@@ -34,13 +34,11 @@ public class LoginSuccessStepDef {
     }
 
     private Actor getActor(String actorName) {
-        // Loại bỏ dấu ngoặc kép nếu có
         String cleanedName = actorName.replaceAll("^\"|\"$", "");
         if (cleanedName.equalsIgnoreCase("the user") || cleanedName.equalsIgnoreCase("actor") || cleanedName.equalsIgnoreCase("the admin") || cleanedName.equalsIgnoreCase("admin")) {
             try {
                 return OnStage.theActorInTheSpotlight();
             } catch (Exception e) {
-                // fall back
             }
         }
         return OnStage.theActorCalled(cleanedName);

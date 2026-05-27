@@ -132,7 +132,7 @@ Feature: Test Appointment Success
     When the admin clicks "OK" on the success alert
     Then the system displays the newly created appointment in the appointment history list
 
-  @TC_APT_07
+  @TC_APT_07 @customerValidate
   Scenario: TC_APT_07 Customer leaves appointment time empty
     Given "customer" go to bml login page
     And "customer" logs in with customer credentials from config
@@ -141,7 +141,7 @@ Feature: Test Appointment Success
     And the customer clicks the "Next" button
     Then the system displays the alert message "Vui lòng chọn khung giờ hẹn."
 
-    @TC_APT_08
+    @TC_APT_08 @customerValidate
     Scenario: TC_APT_08 Customer cannot book an appointment without selecting a service
     Given "customer" go to bml login page
     And "customer" logs in with customer credentials from config
@@ -152,7 +152,7 @@ Feature: Test Appointment Success
     And the customer clicks the "Next" button
     Then the system displays the alert message "Vui lòng chọn ít nhất 1 dịch vụ."
 
-  @TC_APT_09
+  @TC_APT_09 @customerValidate
   Scenario: TC_APT_09 Customer cannot book an appointment without entering full name
     Given "customer" go to bml login page
     And "customer" logs in with customer credentials from config
@@ -166,7 +166,7 @@ Feature: Test Appointment Success
     And the customer clicks the "Book Appointment" button
     Then the system displays the alert message "Vui lòng điền họ tên."
 
-  @TC_APT_10
+  @TC_APT_10 @customerValidate
   Scenario: TC_APT_10 Customer cannot book an appointment without entering phone number
     Given "customer" go to bml login page
     And "customer" logs in with customer credentials from config
@@ -181,18 +181,18 @@ Feature: Test Appointment Success
     And the customer clicks the "Book Appointment" button
     Then the system displays the alert message "Vui lòng điền số điện thoại."
 
-  @TC_APT_11
+  @TC_APT_11 @adminValidate
   Scenario: TC_APT_11 Admin cannot create an appointment without selecting start time
     Given "admin" go to bml login page
     And "admin" logs in with admin credentials from config
     And the admin navigates to "Admin Management"
     When the admin clicks the "Lịch Hẹn" button
     And the admin clicks the "Tạo lịch hẹn" button
-    And the admin enters appointment date "auto_date"
+    And the admin enters appointment date "past_auto_date"
     And the admin clicks the "Lưu lịch hẹn" button
-    Then the system displays the alert message "Khung giờ hẹn không hợp lệ. Vui lòng chọn lại slot 30 phút."
+    Then the system displays the alert message "Ngày hẹn chỉ được chọn từ hôm nay đến tối đa 1 tuần."
 
-  @TC_APT_12
+  @TC_APT_12 @adminValidate
   Scenario: TC_APT_12 Admin cannot create an appointment without selecting staff
     Given "admin" go to bml login page
     And "admin" logs in with admin credentials from config
@@ -205,3 +205,33 @@ Feature: Test Appointment Success
     And the admin selects start time "auto_time"
     And the admin clicks the "Lưu lịch hẹn" button
     Then the system displays the alert message "Vui lòng thêm ít nhất 1 dòng dịch vụ."
+
+  @TC_APT_13 @adminValidate
+  Scenario: TC_APT_13 Admin cannot create an appointment when customer name is empty
+    Given "admin" go to bml login page
+    And "admin" logs in with admin credentials from config
+    And the admin navigates to "Admin Management"
+    When the admin clicks the "Lịch Hẹn" button
+    And the admin clicks the "Tạo lịch hẹn" button
+    And the admin enters customer phone number "auto_phone"
+    And the admin enters appointment date "auto_date"
+    And the admin selects start time "auto_time"
+    And the admin selects service "auto_service"
+    And the admin selects suitable specialist "auto_specialist" row one
+    And the admin clicks the "Lưu lịch hẹn" button
+    Then the system displays the alert message "Vui lòng điền tên và số điện thoại khách hàng."
+
+  @TC_APT_14 @adminValidate
+  Scenario: TC_APT_14 Admin cannot create an appointment when customer phone is empty
+    Given "admin" go to bml login page
+    And "admin" logs in with admin credentials from config
+    And the admin navigates to "Admin Management"
+    When the admin clicks the "Lịch Hẹn" button
+    And the admin clicks the "Tạo lịch hẹn" button
+    And the admin enters customer full name "auto_name"
+    And the admin enters appointment date "auto_date"
+    And the admin selects start time "auto_time"
+    And the admin selects service "auto_service"
+    And the admin selects suitable specialist "auto_specialist" row one
+    And the admin clicks the "Lưu lịch hẹn" button
+    Then the system displays the alert message "Vui lòng điền tên và số điện thoại khách hàng."
