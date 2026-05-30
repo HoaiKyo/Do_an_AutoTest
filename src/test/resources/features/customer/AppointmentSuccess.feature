@@ -235,3 +235,24 @@ Feature: Test Appointment Success
     And the admin selects suitable specialist "auto_specialist" row one
     And the admin clicks the "Lưu lịch hẹn" button
     Then the system displays the alert message "Vui lòng điền tên và số điện thoại khách hàng."
+
+  @TC_APT_15
+  Scenario: TC_APT_15  Customer cannot book an appointment when the selected time slot exceeds the allowed number of companions
+    Given "customer" go to bml login page
+    And "customer" logs in with customer credentials from config
+    When the customer clicks the "Book Now" button on the Banner
+    And the customer selects appointment date "01/06/2026"
+    And the customer selects appointment time "09:00"
+    And the customer enters companion quantity "1"
+    And the customer enters companion name "auto_companion_name"
+    And the customer clicks the "Next" button
+    And the customer selects service "auto_service"
+    And the customer selects specialist "auto_specialist"
+    And the customer selects service at row 2 "auto_service_2"
+    And the customer selects available specialist at row 2 "auto_specialist_2"
+    And the customer clicks the "Next" button
+    And the customer enters full name "auto_name"
+    And the customer enters phone number "auto_phone"
+    And the customer clicks the "Book Appointment" button
+    Then the system displays the alert message "Khung giờ 09:00 đã đạt giới hạn sức chứa (9/10 giường). Vui lòng chọn lúc khác hoặc giảm dịch vụ."
+

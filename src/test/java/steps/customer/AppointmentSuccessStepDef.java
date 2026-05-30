@@ -138,6 +138,11 @@ public class AppointmentSuccessStepDef {
             actor.attemptsTo(Click.on(screenplay.ui.common.Registration.BUTTON_REGISTER));
         } else if (btnName.contains("Đăng nhập") || btnName.contains("Đăng nhap")) {
             actor.attemptsTo(Click.on(screenplay.ui.common.LoginPage.BUTTON_LOGIN));
+        } else if (btnName.equals("Hủy lịch")) {
+            actor.attemptsTo(
+                    WaitUntil.the(screenplay.ui.customer.AppointmentCancel.BUTTON_CANCEL, isVisible()),
+                    Click.on(screenplay.ui.customer.AppointmentCancel.BUTTON_CANCEL)
+            );
         }
     }
 
@@ -247,5 +252,22 @@ public class AppointmentSuccessStepDef {
                         Matchers.containsString(expectedMessage)
                 )
         );
+    }
+
+    @And("the customer clicks {string} on the confirmation alert")
+    public void customerClicksOnAlert(String action) {
+        WebDriver driver = Serenity.getDriver();
+        try {
+            new WebDriverWait(driver, Duration.ofSeconds(5))
+                    .until(ExpectedConditions.alertIsPresent());
+            
+            if (action.equalsIgnoreCase("OK") || action.equalsIgnoreCase("Yes")) {
+                driver.switchTo().alert().accept();
+            } else {
+                driver.switchTo().alert().dismiss();
+            }
+        } catch (Exception e) {
+            System.out.println("No alert present to click " + action);
+        }
     }
 }

@@ -1,16 +1,61 @@
-
-  @LoginFailed
-  Feature: Test Login Failed and Account Management
+@Login
+Feature: Test Login
 
   Background:
     Given <actor> go to bml login page
+
+  @TC_LOG_03
+  Scenario Outline: TC_LOG_03 Login success with role user
+    When <actor> logs in with username "<username>" and password "<password>"
+    Then the user should see the profile name as "<profileName>"
+    Examples:
+      | actor | username          | password | profileName |
+      | user  | phuc.to@gmail.com | 12345678 | Tô Văn Phúc |
+
+  @TC_LOG_04
+  Scenario Outline: TC_LOG_04 Login success with role letan
+    When <actor> logs in with username "<username>" and password "<password>"
+    Then the user should see the profile name as "<profileName>"
+    When the user navigates to "Receptionist Management"
+    Then the user should see the receptionist management page
+
+    Examples:
+      | actor | username         | password  | profileName |
+      | letan | letan@nhaspa.com | 123456789 | Lễ Tân 1    |
+
+  @TC_LOG_05
+  Scenario Outline: TC_LOG_05 Login success with role admin
+    When <actor> logs in with username "<username>" and password "<password>"
+    Then the user should see the profile name as "<profileName>"
+    When the user navigates to "Admin Management"
+    Then the user should see the admin management page
+
+    Examples:
+      | actor | username         | password  | profileName    |
+      | admin | admin@nhaspa.com | 12345678  | Admin Hệ Thống |
+
+  @TC_LOG_06 @LoginAccActivated
+  Scenario Outline: TC_LOG_06 Admin activates user account and verifies login success
+    # Phase 1: Admin performs activation
+    Given Admin logs in with username "admin@nhaspa.com" and password "12345678"
+    When  the user activates account "hienbeo@gmail.com" in Admin page
+    And   the user logs out from Admin page
+
+    # Phase 2: Activated user logs in successfully
+    When  TestUser logs in with username "hienbeo@gmail.com" and password "12345678"
+    Then  TestUser should see the profile name as "Phạm Hiền"
+
+    Examples:
+    |user|
+    |admin|
+
   @TC_LOG_07
   Scenario Outline: TC_LOG_07 Login failed with locked account
     When <actor> logs in with username "<username>" and password "<password>"
     Then the user should see alert message "<message>" at the top of the screen
     Examples:
       | actor | username      | password | message              |
-      | user  | abc@gmail.com | 12345678 | Tài khoản đã bị khóa |
+      | user  | hien@gmail.com | 12345678 | Tài khoản đã bị khóa |
 
   @TC_LOG_08 @TC_LOG_09 @TC_LOG_10 @EmptyField
   Scenario Outline:TC_LOG_08 TC_LOG_09 TC_LOG_10 - <caseName>

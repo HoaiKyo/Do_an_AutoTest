@@ -47,9 +47,24 @@ public class SelectAppointmentTime implements Task {
             
             savedTime = select.getOptions().get(randomIndex).getText().trim();
         } else {
-            actor.attemptsTo(
-                    SelectFromOptions.byVisibleText(time).from(AppointmentSuccess.KHUNGGIO));
-            savedTime = time;
+            Select select = new Select(AppointmentSuccess.KHUNGGIO.resolveFor(actor));
+            java.util.List<org.openqa.selenium.WebElement> options = select.getOptions();
+            String matchedText = time;
+            boolean found = false;
+            for (org.openqa.selenium.WebElement option : options) {
+                if (option.getText().contains(time)) {
+                    matchedText = option.getText().trim();
+                    found = true;
+                    break;
+                }
+            }
+            if (found) {
+                actor.attemptsTo(SelectFromOptions.byVisibleText(matchedText).from(AppointmentSuccess.KHUNGGIO));
+                savedTime = matchedText;
+            } else {
+                actor.attemptsTo(SelectFromOptions.byVisibleText(time).from(AppointmentSuccess.KHUNGGIO));
+                savedTime = time;
+            }
         }
         actor.remember("savedTime", savedTime);
     }

@@ -20,6 +20,10 @@ import screenplay.questions.admin.AlertSuccessIsVisible;
 import screenplay.questions.admin.VerifyAdminAppointmentInHistory;
 import screenplay.tasks.admin.*;
 import screenplay.ui.admin.AppointmentAdminSuccess;
+import screenplay.ui.admin.AppointmentCancel;
+import screenplay.ui.receptionist.AppoinmentCancel;
+import net.serenitybdd.screenplay.waits.WaitUntil;
+import static net.serenitybdd.screenplay.matchers.WebElementStateMatchers.isVisible;
 
 import java.time.Duration;
 import java.util.List;
@@ -39,6 +43,20 @@ public class AppointmentAdminSuccessStepDef {
         }
         if (btnName.equalsIgnoreCase("Lưu lịch hẹn")) {
             actor.attemptsTo(ClickSaveAppointment.click());
+            return;
+        }
+        if (btnName.equalsIgnoreCase("Hủy")) {
+            actor.attemptsTo(
+                WaitUntil.the(AppointmentCancel.BUTTON_HUYLICH, isVisible()),
+                Click.on(AppointmentCancel.BUTTON_HUYLICH)
+            );
+            return;
+        }
+        if (btnName.equalsIgnoreCase("Xác nhận hủy")) {
+            actor.attemptsTo(
+                WaitUntil.the(AppoinmentCancel.BUTTON_XACNHANHUY, isVisible()),
+                Click.on(AppoinmentCancel.BUTTON_XACNHANHUY)
+            );
             return;
         }
         if (btnName.equalsIgnoreCase("Thêm người")) {
@@ -245,5 +263,25 @@ public class AppointmentAdminSuccessStepDef {
     public void adminSelectsServiceRowTwoTC06(String service) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(AdminSelectsServiceRowTwo.withName(service));
+    }
+
+    @And("the admin clicks the {string} menu item")
+    public void adminClicksMenuItem(String menu) {
+        Actor actor = OnStage.theActorInTheSpotlight();
+        if (menu.equalsIgnoreCase("Lịch hẹn")) {
+            actor.attemptsTo(
+                    WaitUntil.the(AppointmentCancel.APPOINTMENT_SIDEBAR_MENU, isVisible()),
+                    Click.on(AppointmentCancel.APPOINTMENT_SIDEBAR_MENU)
+            );
+        }
+    }
+
+    @And("the admin clicks the eye icon in the action column to view appointment details")
+    public void adminClicksEyeIconToViewDetails() {
+        Actor actor = OnStage.theActorInTheSpotlight();
+        actor.attemptsTo(
+                WaitUntil.the(AppointmentCancel.ICON_MAT_XEMCHITIET, isVisible()),
+                Click.on(AppointmentCancel.ICON_MAT_XEMCHITIET)
+        );
     }
 }
