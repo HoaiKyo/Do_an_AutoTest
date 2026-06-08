@@ -16,9 +16,6 @@ public class AppointmentAdminSuccess {
                     "aside.admin-slide-in-right div.rounded-lg.border.p-2\\.5:nth-of-type(1) select:nth-of-type(2)"
             ));
 
-    public static final Target BUTTON_ADD_SERVICE_ROW = Target.the("Nut them dong dich vu")
-            .located(By.xpath("//aside[contains(@class,'admin-slide-in-right')]//button[contains(normalize-space(.),'+ Thêm dòng dịch vụ')]"));
-
     public static final Target COMBOBOX_CHUYENVIEN = Target.the("chuyen vien dong 1")
             .located(By.cssSelector(
                     "aside.admin-slide-in-right div.rounded-lg.border.p-2\\.5:nth-of-type(1) select:last-of-type"

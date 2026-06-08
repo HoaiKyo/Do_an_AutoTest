@@ -11,8 +11,7 @@ public class ManagementAdmin {
         public static final Target BUTTON_NGUOIDUNG = Target.the("Option Nguoi Dung")
                         .located(By.xpath("//span[contains(text(),'Người dùng')]"));
         public static final Target BUTTON_ACTIVEUSER = Target.the("Button deactive Ngươi Dung")
-                        .located(By.xpath(
-                                        "//td[contains(text(),'hienbeo@gmail.com')]/following-sibling::td//button[@title='Mở khóa tài khoản']"));
+                        .located(By.xpath("//td[contains(text(),'hienbeo@gmail.com')]/following-sibling::td//button[@title='Mở khóa tài khoản']"));
         public static final Target BUTTON_LOGOUTPAGE = Target.the("Button logout trang admin duoui goc")
                         .located(By.xpath("//button[@title='Đăng xuất']//*[name()='svg']"));
 }

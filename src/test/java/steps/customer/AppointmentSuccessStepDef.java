@@ -26,6 +26,19 @@ import org.hamcrest.Matchers;
 import screenplay.tasks.common.LoginSuccess.OpenProfile;
 import screenplay.ui.common.LoginPage;
 import screenplay.ui.customer.AppointmentSuccess;
+import screenplay.tasks.common.LoginSuccess.Login;
+import screenplay.tasks.customer.SelectAppointmentDate;
+import screenplay.tasks.customer.SelectAppointmentTime;
+import screenplay.tasks.customer.SelectService;
+import screenplay.tasks.customer.SelectSpecialist;
+import screenplay.ui.common.Registration;
+import screenplay.ui.customer.AppointmentCancel;
+import screenplay.questions.customer.VerifyAppointmentInHistory;
+import screenplay.tasks.customer.SelectServiceAtRow2;
+import screenplay.tasks.customer.SelectSpecialistAtRow2;
+import screenplay.tasks.customer.EnterCompanionQuantity;
+import screenplay.tasks.customer.EnterCompanionName;
+import screenplay.questions.common.TheAlertMessage;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -50,7 +63,7 @@ public class AppointmentSuccessStepDef {
         Actor actor = OnStage.theActorCalled(actorName);
         String username = environmentVariables.getProperty("credentials." + role + ".username");
         String password = environmentVariables.getProperty("credentials." + role + ".password");
-        actor.attemptsTo(screenplay.tasks.common.LoginSuccess.Login.withCredentials(username, password));
+        actor.attemptsTo(Login.withCredentials(username, password));
     }
 
     @When("the customer clicks the {string} button on the Banner")
@@ -65,7 +78,7 @@ public class AppointmentSuccessStepDef {
     public void customerSelectsDate(String date) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.SelectAppointmentDate.withValue(date)
+                SelectAppointmentDate.withValue(date)
         );
         savedDate = actor.recall("savedDate");
     }
@@ -74,7 +87,7 @@ public class AppointmentSuccessStepDef {
     public void customerSelectsTime(String time) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.SelectAppointmentTime.withValue(time)
+                SelectAppointmentTime.withValue(time)
         );
         savedTime = actor.recall("savedTime");
     }
@@ -83,7 +96,7 @@ public class AppointmentSuccessStepDef {
     public void customerSelectsService(String service) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.SelectService.withName(service)
+                SelectService.withName(service)
         );
         savedService = actor.recall("savedService");
     }
@@ -92,7 +105,7 @@ public class AppointmentSuccessStepDef {
     public void customerSelectsSpecialist(String specialist) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.SelectSpecialist.withName(specialist)
+                SelectSpecialist.withName(specialist)
         );
     }
 
@@ -135,13 +148,13 @@ public class AppointmentSuccessStepDef {
                     Click.on(AppointmentSuccess.BUTTON_ADD_SERVICE)
             );
         } else if (btnName.contains("Đăng ký") || btnName.contains("Đăng kí") || btnName.contains("Đăng ky")) {
-            actor.attemptsTo(Click.on(screenplay.ui.common.Registration.BUTTON_REGISTER));
+            actor.attemptsTo(Click.on(Registration.BUTTON_REGISTER));
         } else if (btnName.contains("Đăng nhập") || btnName.contains("Đăng nhap")) {
-            actor.attemptsTo(Click.on(screenplay.ui.common.LoginPage.BUTTON_LOGIN));
+            actor.attemptsTo(Click.on(LoginPage.BUTTON_LOGIN));
         } else if (btnName.equals("Hủy lịch")) {
             actor.attemptsTo(
-                    WaitUntil.the(screenplay.ui.customer.AppointmentCancel.BUTTON_CANCEL, isVisible()),
-                    Click.on(screenplay.ui.customer.AppointmentCancel.BUTTON_CANCEL)
+                    WaitUntil.the(AppointmentCancel.BUTTON_CANCEL, isVisible()),
+                    Click.on(AppointmentCancel.BUTTON_CANCEL)
             );
         }
     }
@@ -202,7 +215,7 @@ public class AppointmentSuccessStepDef {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.should(
                 GivenWhenThen.seeThat(
-                        screenplay.questions.customer.VerifyAppointmentInHistory.withDetails(
+                        VerifyAppointmentInHistory.withDetails(
                                 savedService,
                                 savedTime + " - " + savedDate
                         ),
@@ -215,7 +228,7 @@ public class AppointmentSuccessStepDef {
     public void customerSelectsServiceRow2(String service) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.SelectServiceAtRow2.withName(service)
+                SelectServiceAtRow2.withName(service)
         );
     }
 
@@ -223,7 +236,7 @@ public class AppointmentSuccessStepDef {
     public void customerSelectsSpecialistRow2(String specialist) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.SelectSpecialistAtRow2.withName(specialist)
+                SelectSpecialistAtRow2.withName(specialist)
         );
     }
 
@@ -231,7 +244,7 @@ public class AppointmentSuccessStepDef {
     public void customerEntersCompanionQuantity(String quantity) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.EnterCompanionQuantity.withValue(quantity)
+                EnterCompanionQuantity.withValue(quantity)
         );
     }
 
@@ -239,7 +252,7 @@ public class AppointmentSuccessStepDef {
     public void customerEntersCompanionName(String name) {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.attemptsTo(
-                screenplay.tasks.customer.EnterCompanionName.withValue(name)
+                EnterCompanionName.withValue(name)
         );
     }
 
@@ -248,7 +261,7 @@ public class AppointmentSuccessStepDef {
         Actor actor = OnStage.theActorInTheSpotlight();
         actor.should(
                 GivenWhenThen.seeThat(
-                        screenplay.questions.common.TheAlertMessage.text(),
+                        TheAlertMessage.text(),
                         Matchers.containsString(expectedMessage)
                 )
         );
